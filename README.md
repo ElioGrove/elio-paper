@@ -1,5 +1,5 @@
 <center>
-    <img src="https://raw.githubusercontent.com/xiaolinbaba/Paper/1f20bc8ca05cb74e6739ce21774f0ae07449ab13/favicon.svg" style="width: 100px;">
+    <img src="https://raw.githubusercontent.com/ElioGrove/elio-paper/1f20bc8ca05cb74e6739ce21774f0ae07449ab13/favicon.svg" style="width: 100px;">
 </center>
 
 
