@@ -131,7 +131,7 @@ else:
 | ------------------------------------------- | ---------------------- | ------------ |
 | [Mermaid 渲染](https://mermaid-live.nodejs.cn/edit) | Mermaid图渲染 | 🌟🌟🌟  |
 | [数学公式渲染](https://mathjax.thus.chat/)   \t| 数学公式渲染 | 🌟🌟🌟 |
-| [Markdown语法速查](https://xiaolinbaba.notion.site/Markdown-bcf20a9190db4b208dc137f755788405) | Markdown 语法速查 | 🌟🌟🌟🌟 |
+| [Markdown语法速查](https://hub.thus.chat/apps/markdown) | Markdown 语法速查 | 🌟🌟🌟🌟 |
 
 <![PIC01.png](https://picx.zhimg.com/v2-45dd5f524da0d125233d6af4fb2d4135_r.jpg),![PIC02.png](https://pic1.zhimg.com/v2-d591ac49a57ca87cb3c7b29d6e1a7622_r.jpg),![PIC03.png](https://picx.zhimg.com/v2-b712755e8f4e02226582bbfb6246dcd3_r.jpg)>`;
 
@@ -981,7 +981,7 @@ else:
 | ------------------------------------------- | ---------------------- | ------------ |
 | [Mermaid 渲染](https://mermaid-live.nodejs.cn/edit) | Mermaid图渲染 | 🌟🌟🌟  |
 | [数学公式渲染](https://mathjax.thus.chat/)   	| 数学公式渲染 | 🌟🌟🌟 |
-| [Markdown语法速查](https://xiaolinbaba.notion.site/Markdown-bcf20a9190db4b208dc137f755788405) | Markdown 语法速查 | 🌟🌟🌟🌟 |
+| [Markdown语法速查](https://hub.thus.chat/apps/markdown) | Markdown 语法速查 | 🌟🌟🌟🌟 |
 
 <![PIC01.png](https://pic.thus.chat/rest/0QryNTK.png),![PIC02.png](https://pic.thus.chat/rest/TypyNTK.png),![PIC03.png](https://pic.thus.chat/rest/6yRyNTK.png)>`;
       setEditorValue(defaultContent);
