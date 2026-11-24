@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const showdown = !!window.showdown;
         const codemirror = !!window.CodeMirror;
 
-        console.log('Library status:', { hljs, showdown, codemirror });
-
         if (hljs && showdown && codemirror) {
           resolve();
         } else {
@@ -25,14 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 等待库加载完成后初始化
   waitForLibraries().then(() => {
-    console.log('All libraries loaded, initializing...');
-
     // 初始化 highlight.js
     if (window.hljs) {
       hljs.configure({
         ignoreUnescapedHTML: true
       });
-      console.log('highlight.js loaded successfully');
     } else {
       console.error('highlight.js not loaded');
     }
@@ -144,7 +139,6 @@ else:
     const wordCount = document.getElementById('wordCount');
     const charCount = document.getElementById('charCount');
     const saveStatus = document.getElementById('saveStatus');
-    const editorDate = document.getElementById('editorDate');
     const zoomLevelEl = document.getElementById('zoomLevel');
     const zoomInBtn = document.getElementById('zoomIn');
     const zoomOutBtn = document.getElementById('zoomOut');
@@ -220,9 +214,11 @@ else:
       codeMirrorEditor.refresh();
     }, 100);
 
-    // 窗口大小改变时刷新编辑器
+    // 窗口大小改变时刷新编辑器（防抖避免定时器堆积）
+    let resizeTimer;
     window.addEventListener('resize', () => {
-      setTimeout(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
         codeMirrorEditor.refresh();
       }, 100);
     });
@@ -242,28 +238,6 @@ else:
     } else if (window.confetti) {
       myConfetti = window.confetti;
     }
-
-
-    // 更新日期显示
-    function updateDate() {
-      const now = new Date();
-      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-      const year = now.getFullYear();
-      const month = now.getMonth() + 1;
-      const day = now.getDate();
-      const weekday = weekdays[now.getDay()];
-
-      // 统一公历显示，避免简化农历误差
-      const solarString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${weekday}`;
-      if (editorDate) editorDate.textContent = solarString;
-      // 预览标题已替换为缩放工具，不再显示日期
-    }
-
-    // 初始化日期显示
-    updateDate();
-
-    // 每分钟更新一次日期（以防跨日）
-    setInterval(updateDate, 60000);
 
     // 统计文本信息
     function updateStats() {
@@ -342,19 +316,28 @@ else:
         return `<div class="blue-card-placeholder" data-content="${encodeURIComponent(content.trim())}"></div>`;
       });
 
-      // 恢复代码块内容
+      // 恢复代码块内容（使用函数返回值避免代码块中 $& / $$ 触发特殊替换）
       codeBlocks.forEach((codeBlock, index) => {
-        markdownText = markdownText.replace(`__CODE_BLOCK_${index}__`, codeBlock);
+        markdownText = markdownText.replace(`__CODE_BLOCK_${index}__`, () => codeBlock);
       });
 
       return markdownText;
+    }
+
+    // 安全解码 URI 组件，避免异常百分号序列抛出 URIError
+    function safeDecodeURIComponent(str) {
+      try {
+        return decodeURIComponent(str);
+      } catch (e) {
+        return str;
+      }
     }
 
     // 处理信息卡片占位符
     function processInfoCardPlaceholders(html) {
       // 处理 info 卡片
       html = html.replace(/<div class="info-card-placeholder" data-title="([^"]*)" data-content="([^"]*)"><\/div>/g, (match, title, encodedContent) => {
-        const content = decodeURIComponent(encodedContent);
+        const content = safeDecodeURIComponent(encodedContent);
         let processedContent = converter.makeHtml(content);
 
         // 清理内部的段落标签，使用简单的换行
@@ -385,7 +368,7 @@ else:
 
       // 处理 orange 卡片（无标题）
       html = html.replace(/<div class="orange-card-placeholder" data-content="([^"]*)"><\/div>/g, (match, encodedContent) => {
-        const content = decodeURIComponent(encodedContent);
+        const content = safeDecodeURIComponent(encodedContent);
         let processedContent = converter.makeHtml(content);
 
         // 清理内部的段落标签，使用简单的换行
@@ -409,7 +392,7 @@ else:
 
       // 处理 blue 卡片（无标题）
       html = html.replace(/<div class="blue-card-placeholder" data-content="([^"]*)"><\/div>/g, (match, encodedContent) => {
-        const content = decodeURIComponent(encodedContent);
+        const content = safeDecodeURIComponent(encodedContent);
         let processedContent = converter.makeHtml(content);
 
         // 清理内部的段落标签，使用简单的换行
@@ -467,9 +450,6 @@ else:
 
         if (images.length === 0) return match;
 
-        // 生成唯一ID
-        const slideshowId = 'slideshow-' + Math.random().toString(36).substr(2, 9);
-
         // 创建滑动幻灯片HTML（基于微信公众号有效实现）
         let slideshowHTML = '<section style="box-sizing: border-box; font-size: 16px; margin: 20px 0;">';
         slideshowHTML += '<section style="font-family: 微软雅黑; font-size: 16px;">';
@@ -498,9 +478,9 @@ else:
         return prefix + slideshowHTML;
       });
 
-      // 恢复代码块内容
+      // 恢复代码块内容（使用函数返回值避免代码块中 $& / $$ 触发特殊替换）
       codeBlocks.forEach((codeBlock, index) => {
-        markdownText = markdownText.replace(`__CODE_BLOCK_${index}__`, codeBlock);
+        markdownText = markdownText.replace(`__CODE_BLOCK_${index}__`, () => codeBlock);
       });
 
       return markdownText;
@@ -509,9 +489,7 @@ else:
     // 渲染 Markdown
     function render() {
       isRendering = true; // 开始渲染
-      console.log('Starting render...');
       let markdownText = getEditorValue();
-      console.log('Original markdown length:', markdownText.length);
 
       // 保存当前滚动位置
       const previewContent = document.querySelector('.preview-content');
@@ -523,9 +501,7 @@ else:
       // 先处理信息卡片（在Markdown转换前）
       markdownText = processInfoCards(markdownText);
 
-      console.log('Converting markdown to HTML...');
       let html = converter.makeHtml(markdownText);
-      console.log('HTML conversion complete, length:', html.length);
 
       // 处理信息卡片占位符
       html = processInfoCardPlaceholders(html);
@@ -533,7 +509,6 @@ else:
       // 处理引用链接
       html = processReferences(html);
 
-      console.log('Setting preview innerHTML...');
       // 安全清洗
       if (window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
         html = window.DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
@@ -545,10 +520,8 @@ else:
 
       // 应用代码高亮 - 使用更短的延迟并优化处理
       setTimeout(() => {
-        console.log('Applying syntax highlighting...');
         if (window.hljs) {
           const codeBlocks = preview.querySelectorAll('pre code');
-          console.log('Found code blocks:', codeBlocks.length);
           codeBlocks.forEach((block, index) => {
             // 检查是否已经高亮过
             if (block.hasAttribute('data-highlighted')) {
@@ -561,11 +534,9 @@ else:
               block.className = 'language-python';
             }
 
-            console.log(`Highlighting block ${index}:`, block.className);
             // 应用新的高亮
             try {
               hljs.highlightElement(block);
-              console.log(`Block ${index} highlighted successfully`);
             } catch (e) {
               console.error(`Error highlighting block ${index}:`, e);
             }
@@ -573,7 +544,7 @@ else:
 
           // 添加Mac样式的SVG圆点
           const preBlocks = preview.querySelectorAll('pre');
-          preBlocks.forEach((pre, index) => {
+          preBlocks.forEach((pre) => {
             // 检查是否已经添加了Mac样式
             if (!pre.querySelector('.mac-sign')) {
               // 创建Mac样式的SVG元素
@@ -588,7 +559,6 @@ else:
 
               // 将SVG插入到pre元素的开头
               pre.insertBefore(macSign, pre.firstChild);
-              console.log(`Added Mac style to code block ${index}`);
             }
           });
         } else {
@@ -709,7 +679,6 @@ else:
 
     // ==== 复刻 Madopic 行号逻辑：使用自定义左侧行号列与 textarea 同步 ====
     const lineNumbersEl = document.querySelector('.line-numbers');
-    const textareaEl = document.getElementById('markdown');
     function updateLineNumbers() {
       if (!lineNumbersEl) return;
       const value = codeMirrorEditor.getValue() || '';
@@ -906,85 +875,7 @@ else:
       }
     } else {
       // 如果没有草稿，加载默认测试内容
-      const defaultContent = DEFAULT_MD_CONTENT || `## Paper 编辑器简介
-
-> **Paper** 是一款轻量级微信公众号 Markdown 编辑器。现代化三栏布局，实时 Markdown 预览，响应式设计；支持大部分 Markdown 语法 (数学公式和 Mermaid除外,请在发布区进行手工渲染)，支持信息卡片。预览区与微信公众号编辑器等宽，所见即所得。欢迎使用👏！ **定制属于每个人自己的微信公众号样式！**
-
-![](https://pic2.zhimg.com/v2-8b3e679e2d23b3516650c9e451fde283_r.jpg)
-
-
-### 🎯 核心特性
-
-**1. 现代化三栏布局**
-- **编辑区**：支持 Markdown 语法编写
-- **预览区**：实时渲染，578px 宽度（与微信公众号编辑器等宽）
-- **发布区**：提供一键复制和相关工具链接
-
-**2. 微信公众号完美适配**
-- 预览区严格按照微信公众号标准，预览区与微信公众号编辑器等宽（578px）
-- 支持的样式完全兼容微信公众号平台
-- 一键复制后可直接粘贴到公众号编辑器
-
-**3. 丰富的功能支持**
-- ✅ 基础 Markdown 语法（标题、段落、列表、表格等）
-- ✅ 代码语法高亮（Kimbie Light 主题，Mac 风格）
-- ✅ 自定义信息卡片（\`:::info\` 语法）
-- ✅ 横屏滑动幻灯片（\`<![alt](url),![alt](url)>\` 语法）
-- ✅ 同步滚动（编辑器与预览区联动）
-- ❌ 数学公式（不支持，请使用工具栏链接手工渲染）
-- ❌ Mermaid 图表（不支持，请使用工具栏链接手工渲染）
-
-
-## 快速开始
-
-1. 访问在线版 [paper.thus.chat](https://paper.thus.chat)
-2. 下载 \`html\` 单文件到本地直接运行
-3. 下载 \`html\` 单文件部署到自己的服务器使用
-4. 下载 \`html\` 单文件用 \`AI\` 修改成自己喜欢的样式后食用 
-
-
-## 常见样式
-
-> **引用样式**：Paper 是一款轻量级微信公众号 Markdown 编辑器。现代化三栏布局，实时 Markdown 预览，响应式设计；支持大部分 Markdown 语法 (数学公式和 Mermaid除外)，支持信息卡片。预览区与微信公众号编辑器等宽，所见即所得。欢迎使用👏！
-
-:::orange
-**浅橙色卡片：** Paper 是一款轻量级微信公众号 Markdown 编辑器。现代化三栏布局，实时 Markdown 预览，响应式设计；支持大部分 Markdown 语法 (数学公式和 Mermaid除外,请在发布区进行手工渲染)，支持信息卡片。
-:::
-
-:::blue
-**浅蓝色卡片：**Paper 是一款轻量级微信公众号 Markdown 编辑器。现代化三栏布局，实时 Markdown 预览，响应式设计；支持大部分 Markdown 语法 (数学公式和 Mermaid除外,请在发布区进行手工渲染)，支持信息卡片。 
-
-支持换行，支持图片。
-:::
-
-:::info 信息卡片
-这是一个信息卡片，支持 **粗体** 和 *斜体* 文本，可以包含多个段落和图片。  
-![picture](https://pic.thus.chat/rest/gdIbj5K.png)
-:::
-
-
-\`\`\`python
-# 这是一个 Python 代码块
-
-def contains_number(s):
-    return any(char.isdigit() for char in s)
-
-
-test_string = "Hello123"
-if contains_number(test_string):
-    print("字符串包含数字")
-else:
-    print("字符串不包含数字")
-\`\`\`
-
-| 常用网址表格             | 功能                  | 推荐    |
-| ------------------------------------------- | ---------------------- | ------------ |
-| [Mermaid 渲染](https://mermaid-live.nodejs.cn/edit) | Mermaid图渲染 | 🌟🌟🌟  |
-| [数学公式渲染](https://mathjax.thus.chat/)   	| 数学公式渲染 | 🌟🌟🌟 |
-| [Markdown语法速查](https://hub.thus.chat/apps/markdown) | Markdown 语法速查 | 🌟🌟🌟🌟 |
-
-<![PIC01.png](https://pic.thus.chat/rest/0QryNTK.png),![PIC02.png](https://pic.thus.chat/rest/TypyNTK.png),![PIC03.png](https://pic.thus.chat/rest/6yRyNTK.png)>`;
-      setEditorValue(defaultContent);
+      setEditorValue(DEFAULT_MD_CONTENT);
       render();
     }
 
@@ -1138,6 +1029,8 @@ else:
     // 同步滚动功能
     let isEditorScrolling = false;
     let isPreviewScrolling = false;
+    let editorScrollTimer;
+    let previewScrollTimer;
     const previewContent = document.querySelector('.preview-content');
 
     function syncScroll(source, target) {
@@ -1171,7 +1064,8 @@ else:
       if (isRendering) return; // 渲染时跳过滚动同步
       isEditorScrolling = true;
       syncScroll('editor', previewContent);
-      setTimeout(() => {
+      clearTimeout(editorScrollTimer);
+      editorScrollTimer = setTimeout(() => {
         isEditorScrolling = false;
       }, 100);
     });
@@ -1191,7 +1085,8 @@ else:
         codeMirrorEditor.scrollTo(null, editorScrollTop);
       }
 
-      setTimeout(() => {
+      clearTimeout(previewScrollTimer);
+      previewScrollTimer = setTimeout(() => {
         isPreviewScrolling = false;
       }, 100);
     });
