@@ -41,26 +41,22 @@
   <meta name="msapplication-tap-highlight" content="no" />
   
   <!-- 引入 normalize.css，用于重置默认浏览器样式 -->
-  <link href="https://cdn.jsdelivr.net/npm/normalize.css@8/normalize.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css" rel="stylesheet" crossorigin="anonymous" />
   <!-- 图标字体（用于顶部工具栏图标） -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous" />
   <link rel="stylesheet" href="style.css">
 
   <!-- 引入 Showdown，用于将 Markdown 转换为 HTML -->
-  <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js" crossorigin="anonymous"></script>
   <!-- 引入 CodeMirror 用于 Markdown 语法高亮 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/github.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
-  <!-- 引入 highlight.js 用于代码高亮 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/github.min.css" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js" crossorigin="anonymous"></script>
+  <!-- 引入 highlight.js 用于代码高亮（默认包已内置 python/javascript/java/cpp 等常见语言） -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous"></script>
   <!-- 引入 Canvas-Confetti，用于点击复制后动画效果 -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" crossorigin="anonymous"></script>
   <!-- 引入 DOMPurify，用于 HTML 安全清洗 -->
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js" integrity="sha384-P0JNneQf81HOl9VwNXK76cQ9VMD6Nfsnepxb0cCOg8+UzEdzgPHAPV4wVQrvYQSx" crossorigin="anonymous"></script>
 
@@ -86,8 +82,8 @@
         <div class="panel-header">
           <h3 class="editor-title"><i class="fab fa-markdown editor-title-icon" aria-hidden="true"></i> Markdown</h3>
           <div class="editor-tools">
-            <button type="button" class="tool-btn" id="toolBold" title="加粗 (Ctrl+B)" aria-label="加粗"><i class="fas fa-bold" aria-hidden="true"></i></button>
-            <button type="button" class="tool-btn" id="toolItalic" title="斜体 (Ctrl+I)" aria-label="斜体"><i class="fas fa-italic" aria-hidden="true"></i></button>
+            <button type="button" class="tool-btn" id="toolBold" title="加粗 (Ctrl/Cmd+B)" aria-label="加粗"><i class="fas fa-bold" aria-hidden="true"></i></button>
+            <button type="button" class="tool-btn" id="toolItalic" title="斜体 (Ctrl/Cmd+I)" aria-label="斜体"><i class="fas fa-italic" aria-hidden="true"></i></button>
             <div class="tool-separator"></div>
             <button type="button" class="tool-btn" id="tbH1" title="一级标题" aria-label="一级标题">H1</button>
             <button type="button" class="tool-btn" id="tbH2" title="二级标题" aria-label="二级标题">H2</button>
@@ -134,7 +130,7 @@
         <span id="saveStatus">已保存</span>
       </div>
       <div class="status-center">
-        <span>Copyright © 2025-2030 nabin-cn,ElioGrove. All Rights Reserved. <a href="https://www.thus.chat/">ELIO AI LAB</a>. Elio Grove</span>
+        <span>Copyright © 2025-2030 nabin-cn,ElioGrove. All Rights Reserved. <a href="https://www.thus.chat/" target="_blank" rel="noopener noreferrer">ELIO AI LAB</a>. Elio Grove</span>
       </div>
       <div class="status-right">
         <span>Markdown</span>
